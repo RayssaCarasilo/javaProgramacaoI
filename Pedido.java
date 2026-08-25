@@ -7,8 +7,9 @@ public class Pedido {
         int pedido;
         int escolha;
 
+        escolha = 1;
 
-        do{
+        do {
             System.out.println("------Cardapio-----------------------");
             System.out.println("Código 1 - Cachorro quente - R$12,00");
             System.out.println("Código 2 - X-Salada - R$15,00");
@@ -20,33 +21,30 @@ public class Pedido {
             System.out.print("Digite a opção desejada: ");
             pedido = teclado.nextInt();
 
-                switch (pedido) {
-                    case 1:
-                        valor += 12;
-                        break;
+            switch (pedido) {
+                case 1:
+                    valor += 12;
+                    break;
+                case 2:
+                    valor += 15;
+                    break;
+                case 3:
+                    valor += 18;
+                    break;
+                case 4:
+                    valor += 6;
+                    break;
+                case 5:
+                    valor += 7;
+                    break;
+                default:
+                    System.out.println("Opção Inválida!");
+                    break;
+            }
 
-                    case 2:
-                        valor += 15;
-                        break;
-                    case 3:
-                        valor += 18;
-                        break;
-
-                    case 4:
-                        valor += 6;
-                        break;
-
-                    case 5:
-                        valor += 7;
-                        break;
-                    default:
-                        System.out.println("Opção Inválida!");
-                        break;
-
-                    System.out.println("Deseja fazer mais um pedido? (1) Sim (0) Não: ");
-                    escolha = teclado.nextInt();
-                } while (escolha == 1) ;
-        }
+            System.out.print("Deseja fazer mais um pedido? (1) Sim (0) Não: ");
+            escolha = teclado.nextInt();
+        } while (escolha == 1);
 
         System.out.println("O valor total do pedido foi: R$" + valor);
 
