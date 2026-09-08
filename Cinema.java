@@ -9,27 +9,24 @@ public class Cinema {
         int vendas[] = new int[sessoes];
         java.util.Scanner scanner = new java.util.Scanner(System.in);
 
-        int[][] assentos = new int[quantidadeFileiras][quantidadeCadeirasPorFileira];
-        for (int i = 0; i < quantidadeFileiras; i++) {
-            int numeroFileira = i + 1;
-            int quantidadeIndisponivel = 0;
+        int[][][] assentos = new int[sessoes][quantidadeFileiras][quantidadeCadeirasPorFileira];
+        boolean[][][] vendaRealizada = new boolean[sessoes][quantidadeFileiras][quantidadeCadeirasPorFileira];
+        for (int s = 0; s < sessoes; s++) {
+            for (int i = 0; i < quantidadeFileiras; i++) {
+                int numeroFileira = i + 1;
+                int quantidadeIndisponivel = 0;
 
-            if (numeroFileira >= primeiraFileiraComLateraisIndisponiveis) {
-                quantidadeIndisponivel = ((numeroFileira - primeiraFileiraComLateraisIndisponiveis) / 2) + 1;
-            }
+                if (numeroFileira >= primeiraFileiraComLateraisIndisponiveis) {
+                    quantidadeIndisponivel = ((numeroFileira - primeiraFileiraComLateraisIndisponiveis) / 2) + 1;
+                }
 
-            for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
-                boolean indisponivelNaLateral = j < quantidadeIndisponivel
-                        || j >= quantidadeCadeirasPorFileira - quantidadeIndisponivel;
+                for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
+                    boolean indisponivelNaLateral = j < quantidadeIndisponivel
+                            || j >= quantidadeCadeirasPorFileira - quantidadeIndisponivel;
 
-                assentos[i][j] = indisponivelNaLateral ? 1 : 0;
+                    assentos[s][i][j] = indisponivelNaLateral ? 1 : 0;
+                }
             }
-        }
-        for (int i = 0; i < quantidadeFileiras; i++) {
-            for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
-                System.out.print(assentos[i][j] + " ");
-            }
-            System.out.println();
         }
 
         System.out.println("Exibição das sessões com as cadeiras disponíveis:");
@@ -37,13 +34,15 @@ public class Cinema {
             System.out.println("Sessão " + (s + 1) + ":");
             for (int i = 0; i < quantidadeFileiras; i++) {
                 for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
-                    System.out.print(assentos[i][j] + " ");
+                    System.out.print(assentos[s][i][j] + " ");
                 }
                 System.out.println();
             }
         }
 
-        for (int s = 0; s < sessoes; s++) {
+        boolean encerrar = false;
+
+        while (!encerrar) {
             System.out.print("Digite a sessão que deseja realizar a compra: ");
             int sessao = scanner.nextInt();
             System.out.print("Digite a cadeira que deseja comprar: ");
@@ -51,26 +50,44 @@ public class Cinema {
             System.out.print("Digite a fileira que deseja comprar: ");
             int fileira = scanner.nextInt();
 
-            if (cadeira > 0 && cadeira <= quantidadeCadeirasPorFileira && fileira > 0
-                    && fileira <= quantidadeFileiras) {
-                assentos[fileira - 1][cadeira - 1] = 1;
-                System.out.println("Compra realizada com sucesso!");
-                vendas[sessao - 1]++;
-            } else {
-                System.out.println("Cadeira ou fileira inválida!");
+            if (sessao < 0 && cadeira < 0 && fileira < 0) {
+                System.out.println("Fim das vendas.");
+                encerrar = true;
+                break;
             }
 
-            if(sessao < 1 || sessao > sessoes) {
-                System.out.println("Sessão inválida!");
+            if (sessao > 0 && sessao <= sessoes
+                    && cadeira > 0 && cadeira <= quantidadeCadeirasPorFileira
+                    && fileira > 0 && fileira <= quantidadeFileiras
+                    && assentos[sessao - 1][fileira - 1][cadeira - 1] == 0) {
+                assentos[sessao - 1][fileira - 1][cadeira - 1] = 1;
+                System.out.println("Compra realizada com sucesso!");
+                vendas[sessao - 1]++;
+                vendaRealizada[sessao - 1][fileira - 1][cadeira - 1] = true;
+            } else {
+                System.out.println("Cadeira indisponível");
+            }
+
+            if (!(sessao > 0 && sessao <= sessoes)) {
+                System.out.println("Sessão inexistente");
+            }
+            if (!(cadeira > 0 && cadeira <= quantidadeCadeirasPorFileira)) {
+                System.out.println("Cadeira inexistente");
+            }
+            if (!(fileira > 0 && fileira <= quantidadeFileiras)) {
+                System.out.println("Fileira inexistente");
             }
         }
 
         System.out.println("Mapa de assentos atualizado:");
-        for (int i = 0; i < quantidadeFileiras; i++) {
-            for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
-                System.out.print(assentos[i][j] + " ");
+        for (int s = 0; s < sessoes; s++) {
+            System.out.println("Sessão " + (s + 1) + ":");
+            for (int i = 0; i < quantidadeFileiras; i++) {
+                for (int j = 0; j < quantidadeCadeirasPorFileira; j++) {
+                    System.out.print(assentos[s][i][j] + " ");
+                }
+                System.out.println();
             }
-            System.out.println();
         }
 
         for (int s = 0; s < sessoes; s++) {
@@ -79,14 +96,54 @@ public class Cinema {
 
         System.out.println("Total de vendas: " + Arrays.stream(vendas).sum());
 
-        System.out.println("Vendas em todas as sessões: " + Arrays.toString(vendas));
+        System.out.println("Assentos vendidos em todas as sessões:");
 
-        System.out.println("Fileiras que tiveram vendas em todas as sessões: " + Arrays.toString(
-            java.util.stream.IntStream.range(0, quantidadeFileiras)
-                .filter(fileira -> java.util.stream.IntStream.range(0, sessoes)
-                    .allMatch(sessao -> assentos[fileira][sessao] == 1))
-                .toArray()
-        ));
+        boolean encontrouAssento = false;
 
+        for (int fileira = 0; fileira < quantidadeFileiras; fileira++) {
+            for (int cadeira = 0; cadeira < quantidadeCadeirasPorFileira; cadeira++) {
+
+                boolean vendeuEmTodas = true;
+
+                for (int sessao = 0; sessao < sessoes; sessao++) {
+                    if (!vendaRealizada[sessao][fileira][cadeira]) {
+                        vendeuEmTodas = false;
+                        break;
+                    }
+                }
+
+                if (vendeuEmTodas) {
+                    System.out.println(
+                            "Fileira " + (fileira + 1)
+                                    + ", cadeira " + (cadeira + 1));
+                    encontrouAssento = true;
+                }
+            }
+        }
+
+        if (!encontrouAssento) {
+            System.out.println("Nenhum assento foi vendido em todas as sessões.");
+        }
+
+        System.out.println("Fileiras vendidas em todas as sessões: ");
+        for (int fileira = 0; fileira < quantidadeFileiras; fileira++) {
+            boolean vendeuEmTodas = true;
+            for (int sessao = 0; sessao < sessoes; sessao++) {
+                for (int cadeira = 0; cadeira < quantidadeCadeirasPorFileira; cadeira++) {
+                    if (!vendaRealizada[sessao][fileira][cadeira]) {
+                        vendeuEmTodas = false;
+                        break;
+                    }
+                }
+                if (!vendeuEmTodas) {
+                    break;
+                }
+            }
+            if (vendeuEmTodas) {
+                System.out.println("Fileira " + (fileira + 1));
+            }
+        }
+
+        scanner.close();
     }
 }
