@@ -2,8 +2,15 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-class Pessoa {
+class Pessoa implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String nome;
     private int matricula;
     private int idade;
@@ -170,169 +177,218 @@ public class GerenciamentoPessoas {
             System.out.println("2 - Consultar pessoa");
             System.out.println("3 - Retirar pessoa");
             System.out.println("4 - Listar todas as pessoas");
+            System.out.println("5 - Gravar arquivo em bytes");
+            System.out.println("6 - Ler arquivo em bytes");
             System.out.println("0 - Sair");
             System.out.println("=============================");
             System.out.print("\nDigite a opcao desejada: ");
             escolha = teclado.nextInt();
 
-            switch (escolha) {
-                case 1:
-                    System.out.println("Digite o tipo de pessoa: ");
-                    System.out.println("1 - Funcionario");
-                    System.out.println("2 - Professor");
-                    System.out.println("3- Aluno");
-                    tipoPessoa = teclado.nextInt();
+            try {
+                switch (escolha) {
+                    case 1 -> {
+                        System.out.println("Digite o tipo de pessoa: ");
+                        System.out.println("1 - Funcionario");
+                        System.out.println("2 - Professor");
+                        System.out.println("3- Aluno");
+                        tipoPessoa = teclado.nextInt();
 
-                    if (tipoPessoa != 1 && tipoPessoa != 2 && tipoPessoa != 3) {
-                        System.out.println("Tipo de pessoa invalido. Tente novamente.");
-                    }
-
-                    if (tipoPessoa == 1) {
-                        System.out.println("Digite o nome do funcionario: ");
-                        nome = teclado.next();
-
-                        System.out.println("Digite a matricula do funcionario: ");
-                        matricula = teclado.nextInt();
-
-                        System.out.println("Digite a idade do funcionario: ");
-                        idade = teclado.nextInt();
-
-                        for (Pessoa p : listaPessoas) {
-                            if (p.getMatricula() == matricula) {
-                                System.out.println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
-                            } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
-                                System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
-                            }
+                        if (tipoPessoa != 1 && tipoPessoa != 2 && tipoPessoa != 3) {
+                            System.out.println("Tipo de pessoa invalido. Tente novamente.");
                         }
 
-                        System.out.println("Digite o setor do funcionario: ");
-                        String setor = teclado.next();
+                        if (tipoPessoa == 1) {
+                            System.out.println("Digite o nome do funcionario: ");
+                            nome = teclado.next();
 
-                        System.out.println("Digite o salario do funcionario: ");
-                        double salario = teclado.nextDouble();
+                            System.out.println("Digite a matricula do funcionario: ");
+                            matricula = teclado.nextInt();
 
-                        Funcionario funcionario = new Funcionario(nome, matricula, idade, setor, salario);
-                        listaPessoas.add(funcionario);
+                            System.out.println("Digite a idade do funcionario: ");
+                            idade = teclado.nextInt();
 
-                    } else if (tipoPessoa == 2) {
-                        System.out.println("Digite o nome do professor: ");
-                        nome = teclado.next();
-
-                        System.out.println("Digite a matricula do professor: ");
-                        matricula = teclado.nextInt();
-
-                        System.out.println("Digite a idade do professor: ");
-                        idade = teclado.nextInt();
-
-                        for (Pessoa p : listaPessoas) {
-                            if (p.getMatricula() == matricula) {
-                                System.out.println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
-                            } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
-                                System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
+                            for (Pessoa p : listaPessoas) {
+                                if (p.getMatricula() == matricula) {
+                                    System.out
+                                            .println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
+                                    System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                }
                             }
+
+                            System.out.println("Digite o setor do funcionario: ");
+                            String setor = teclado.next();
+
+                            System.out.println("Digite o salario do funcionario: ");
+                            double salario = teclado.nextDouble();
+
+                            Funcionario funcionario = new Funcionario(nome, matricula, idade, setor, salario);
+                            listaPessoas.add(funcionario);
+
+                        } else if (tipoPessoa == 2) {
+                            System.out.println("Digite o nome do professor: ");
+                            nome = teclado.next();
+
+                            System.out.println("Digite a matricula do professor: ");
+                            matricula = teclado.nextInt();
+
+                            System.out.println("Digite a idade do professor: ");
+                            idade = teclado.nextInt();
+
+                            for (Pessoa p : listaPessoas) {
+                                if (p.getMatricula() == matricula) {
+                                    System.out
+                                            .println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
+                                    System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                }
+                            }
+
+                            System.out.println("Digite a disciplina do professor: ");
+                            String disciplina = teclado.next();
+
+                            System.out.println("Digite a titulacao do professor: ");
+                            String titulacao = teclado.next();
+
+                            Professor professor = new Professor(nome, matricula, idade, disciplina, titulacao);
+                            listaPessoas.add(professor);
+
+                        } else if (tipoPessoa == 3) {
+                            System.out.println("Digite o nome do aluno: ");
+                            nome = teclado.next();
+
+                            System.out.println("Digite a matricula do aluno: ");
+                            matricula = teclado.nextInt();
+
+                            System.out.println("Digite a idade do aluno: ");
+                            idade = teclado.nextInt();
+
+                            for (Pessoa p : listaPessoas) {
+                                if (p.getMatricula() == matricula) {
+                                    System.out
+                                            .println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
+                                    System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
+                                    matriculaJaCadastrada = true;
+                                    break;
+                                }
+                            }
+
+                            System.out.println("Digite o curso do aluno: ");
+                            String curso = teclado.next();
+
+                            System.out.println("Digite o semestre do aluno: ");
+                            int semestre = teclado.nextInt();
+
+                            Aluno aluno = new Aluno(nome, matricula, idade, curso, semestre);
+                            listaPessoas.add(aluno);
+                            break;
                         }
 
-                        System.out.println("Digite a disciplina do professor: ");
-                        String disciplina = teclado.next();
-
-                        System.out.println("Digite a titulacao do professor: ");
-                        String titulacao = teclado.next();
-
-                        Professor professor = new Professor(nome, matricula, idade, disciplina, titulacao);
-                        listaPessoas.add(professor);
-
-                    } else if (tipoPessoa == 3) {
-                        System.out.println("Digite o nome do aluno: ");
-                        nome = teclado.next();
-
-                        System.out.println("Digite a matricula do aluno: ");
-                        matricula = teclado.nextInt();
-
-                        System.out.println("Digite a idade do aluno: ");
-                        idade = teclado.nextInt();
-
-                        for (Pessoa p : listaPessoas) {
-                            if (p.getMatricula() == matricula) {
-                                System.out.println("Matricula ja cadastrada. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
-                            } else if (nome.isEmpty() || matricula <= 0 || idade <= 0) {
-                                System.out.println("Dados invalidos. Pessoa nao incluida. Tente novamente.");
-                                matriculaJaCadastrada = true;
-                                break;
-                            }
-                        }
-
-                        System.out.println("Digite o curso do aluno: ");
-                        String curso = teclado.next();
-
-                        System.out.println("Digite o semestre do aluno: ");
-                        int semestre = teclado.nextInt();
-
-                        Aluno aluno = new Aluno(nome, matricula, idade, curso, semestre);
-                        listaPessoas.add(aluno);
                         break;
                     }
 
-                    break;
+                    case 2 -> {
+                        System.out.println("Digite a matricula da pessoa que deseja consultar: ");
+                        int matriculaConsulta = teclado.nextInt();
+                        boolean pessoaEncontrada = false;
 
-                case 2:
-                    System.out.println("Digite a matricula da pessoa que deseja consultar: ");
-                    int matriculaConsulta = teclado.nextInt();
-                    boolean pessoaEncontrada = false;
+                        for (Pessoa pessoa : listaPessoas) {
+                            if (pessoa.getMatricula() == matriculaConsulta) {
+                                System.out.println("\nDados da pessoa encontrada:");
+                                pessoa.exibirDados();
+                                pessoaEncontrada = true;
+                                break;
+                            }
+                        }
+                        if (!pessoaEncontrada) {
+                            System.out.println("Pessoa não encontrada.");
+                        }
+                        break;
+                    }
 
-                    for (Pessoa pessoa : listaPessoas) {
-                        if (pessoa.getMatricula() == matriculaConsulta) {
-                            System.out.println("\nDados da pessoa encontrada:");
+                    case 3 -> {
+                        System.out.println("Digite a matricula da pessoa que deseja retirar: ");
+                        int matriculaRetirar = teclado.nextInt();
+                        boolean pessoaRemovida = false;
+
+                        for (Pessoa pessoa : listaPessoas) {
+                            if (pessoa.getMatricula() == matriculaRetirar) {
+                                listaPessoas.remove(pessoa);
+                                System.out.println("Pessoa removida com sucesso.");
+                                pessoaRemovida = true;
+                                break;
+                            }
+                        }
+                        if (!pessoaRemovida) {
+                            System.out.println("Pessoa não encontrada.");
+                        }
+                        break;
+                    }
+
+                    case 4 -> {
+                        System.out.println("\n==== Lista de pessoas cadastradas ====");
+                        for (Pessoa pessoa : listaPessoas) {
                             pessoa.exibirDados();
-                            pessoaEncontrada = true;
-                            break;
                         }
+                        break;
                     }
-                    if (!pessoaEncontrada) {
-                        System.out.println("Pessoa não encontrada.");
-                    }
-                    break;
+                    case 5 -> {
 
-                case 3:
-                    System.out.println("Digite a matricula da pessoa que deseja retirar: ");
-                    int matriculaRetirar = teclado.nextInt();
-                    boolean pessoaRemovida = false;
+                        try (ObjectOutputStream arquivo = new ObjectOutputStream(
+                                new FileOutputStream("./listaPessoas.dat"))) {
 
-                    for (Pessoa pessoa : listaPessoas) {
-                        if (pessoa.getMatricula() == matriculaRetirar) {
-                            listaPessoas.remove(pessoa);
-                            System.out.println("Pessoa removida com sucesso.");
-                            pessoaRemovida = true;
-                            break;
+                            arquivo.writeObject(listaPessoas);
+
+                            System.out.println("\nArquivo gravado!");
+
+                        } catch (Exception e) {
+                            System.out.println("\n*** Erro ao gravar arquivo: " + e.getMessage());
                         }
-                    }
-                    if (!pessoaRemovida) {
-                        System.out.println("Pessoa não encontrada.");
-                    }
-                    break;
 
-                case 4:
-                    System.out.println("\n==== Lista de pessoas cadastradas ====");
-                    for (Pessoa pessoa : listaPessoas) {
-                        pessoa.exibirDados();
                     }
-                    break;
 
-                case 0:
-                    System.out.println("Saindo do programa.");
-                    break;
+                    case 6 -> {
 
-                default:
-                    System.out.println("Opcao invalida. Tente novamente.");
+                        try (ObjectInputStream arquivo = new ObjectInputStream(
+                                new FileInputStream("./listaPessoas.dat"))) {
+
+                            @SuppressWarnings("unchecked")
+                            ArrayList<Pessoa> pessoasLidos = (ArrayList<Pessoa>) arquivo.readObject();
+
+                            listaPessoas.clear();
+                            listaPessoas.addAll(pessoasLidos);
+
+                            System.out.println("\nArquivo lido!");
+
+                        } catch (Exception e) {
+                            System.out.println("\n*** Erro ao ler arquivo: " + e.getMessage());
+                        }
+
+                    }
+
+                    case 0 -> {
+                        System.out.println("Saindo do programa.");
+                        break;
+                    }
+
+                    default -> {
+                        System.out.println("Opcao invalida. Tente novamente.");
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println( "\n*** Erro: " + e.getMessage() );
+                teclado.nextLine();
             }
         } while (escolha != 0);
     }
